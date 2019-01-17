@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mqtt-deploy
+spec:
+  replicas: 1
+  minReadySeconds: 5            # waits this time after each new pod comes up,before marking it as ready and move to the next one
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1          # taking one pod down at a time
+      maxSurge: 1                # maximum of extra pods allowed during the rolling update
+  template:
+    metadata:
+      labels:
+        app: mqtt-broker
+    spec:
+      containers:
+      - name: mqtt-broker
+        image: docker.siemens.com/raul.alonso_martinez.ext/rancher_lab/mqtt-broker:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 1883
+        - containerPort: 9001
