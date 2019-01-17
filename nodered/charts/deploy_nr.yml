@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodered-svc
+  labels:
+    app: nodered
+spec:
+  type: NodePort
+  ports:
+  - port: 1880
+    nodePort: 30001
+    protocol: TCP
+    name: nr-bwsr
+  selector:
+    app: nodered
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nodered-deploy
+spec:
+  replicas: 1
+  minReadySeconds: 5            # waits this time after each new pod comes up,before marking it as ready and move to the next one
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1          # taking one pod down at a time
+      maxSurge: 1                # maximum of extra pods allowed during the rolling update
+  template:
+    metadata:
+      labels:
+        app: nodered
+    spec:
+      containers:
+      - name: nodered
+        image: docker.siemens.com/raul.alonso_martinez.ext/rancher_lab/nodered:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 1880
+#        volumeMounts:
+#        - mountPath: "/data"
+#          name: noderedvol
+#          mountPropagation: Bidirectional
+#      volumes:
+#      - name: noderedvol
+#        persistentVolumeClaim:
+#          claimName: task-pv-claim
