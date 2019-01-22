@@ -228,7 +228,7 @@ inputs:
          port => 5000
          type => "docker"
          codec => fluent
-      # }
+       }
       # beats {
       #   port => 5044
       # }
